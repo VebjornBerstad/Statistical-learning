@@ -187,11 +187,12 @@ def preprocess_data(path="data"):
             "Starts",
             "90s",
             "Tkl+Int",
+            'Pos'
         ]
     )
 
     # Drop columns that are not needed in the points dataframe
-    df_points = df_points[["name", "total_points"]]
+    df_points = df_points[["name", "position", "total_points"]]
 
     # Rename the Player column in df to match points dataframe
     df.rename(columns={"Player": "name"}, inplace=True)
