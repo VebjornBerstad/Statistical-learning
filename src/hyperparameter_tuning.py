@@ -9,7 +9,6 @@ def tune_xgboost(X, y):
         "learning_rate": [0.01, 0.1, 0.2],
         "n_estimators": [100, 200, 300],
         "subsample": [0.6, 0.8, 1.0],
-        # add more parameters here
     }
     model = xgb.XGBClassifier(use_label_encoder=False)
     grid_search = GridSearchCV(model, param_grid, cv=3, scoring="accuracy")
@@ -21,8 +20,7 @@ def tune_svm(X, y):
     param_grid = {
         "C": [0.1, 1, 10],
         "gamma": [0.01, 0.1, 1],
-        "kernel": ["rbf", "poly", "sigmoid"],
-        # add more parameters here
+        "kernel": ["rbf", "linear"],
     }
     model = SVC()
     grid_search = GridSearchCV(model, param_grid, cv=3, scoring="accuracy")

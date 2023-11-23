@@ -75,7 +75,7 @@ def plot_confusion_matrix(
     plt.xlabel("Predicted")
 
     plt.savefig("./report/figures/evaluation/" + save_path)
-    plt.show()
+    # plt.show()
 
 
 def plot_feature_importance(
@@ -106,4 +106,4 @@ def plot_feature_importance(
     plt.xlabel("Relative Importance")
     plt.ylabel("Feature")
     plt.savefig("./report/figures/evaluation/" + save_path)
-    plt.show()
+    # plt.show()
