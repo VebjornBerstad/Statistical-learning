@@ -42,24 +42,6 @@ def download_data(path="data"):
         print(f"An error occurred in the download_data function: {e}")
 
 
-def merge_dataframes(df1, df2, name_column="name"):
-    """
-    Merge two dataframes
-
-    Args:
-        df1: the first dataframe
-        df2: the second dataframe
-
-    Returns:
-        pd.DataFrame: the merged dataframe
-    """
-
-    # Merge the two dataframes
-    df = pd.merge(df1, df2, on=name_column, how="left")
-
-    return df
-
-
 def get_best_match(name, choices, threshold=60):
     """
     Get the best match from a list of choices
@@ -100,7 +82,7 @@ def match_and_merge_dataframes(df1, df2, name_column="name"):
 
     df1 = df1.dropna(subset=[name_column])
 
-    df1 = merge_dataframes(df1, df2, name_column=name_column)
+    df1 = pd.merge(df1, df2, on=name_column, how="left")
 
     return df1
 
@@ -112,7 +94,7 @@ def save_data(df, file_path="data/processed/data.csv"):
         print(f"Error saving data to {file_path}: {e}")
 
 
-def preprocess_data(path="data"):
+def preprocess_data(path="data", exclude_GK=True):
     try:
         path_raw = os.path.join(path, "raw")
         path_processed = os.path.join(path, "processed")
@@ -150,6 +132,8 @@ def preprocess_data(path="data"):
     # Keep only premier league players and remove players with less than 90 minutes played
     df = df[df["Comp"] == "Premier League"]
     df = df[df["Min"] > 90]
+    if exclude_GK:
+        df = df[df["Pos"] != "GK"]
 
     # Drop columns that is directly related to the target
     df = df.drop(
@@ -169,8 +153,6 @@ def preprocess_data(path="data"):
             "CrdR",
             "2CrdY",
             "OG",
-            "PKwon",
-            "PKcon",
         ]
     )
 
@@ -187,7 +169,7 @@ def preprocess_data(path="data"):
             "Starts",
             "90s",
             "Tkl+Int",
-            'Pos'
+            "Pos",
         ]
     )
 
@@ -201,12 +183,19 @@ def preprocess_data(path="data"):
     df = match_and_merge_dataframes(df, df_points)
 
     # Drop duplicate rows with same name and number of points keeping the first instance
-    df = df.drop_duplicates(subset=["name", "total_points"], keep="first")
+    df = df.drop_duplicates(subset=["name", "total_points"])
+
+    # Create target total_points/min
+    # df["points/min"] = df["total_points"] / df["Min"]
+    # df = df.drop(columns=["total_points", "Min"])
 
     # Calculate quantiles for total points
-    df["points_quantile"] = pd.qcut(
-        df["total_points"], 4, labels=["low", "medium", "high", "very high"]
-    )
+    # df["points/min"] = pd.qcut(df["points/min"], 4, labels=False)
+
+    df = df[df["position"] != "GKP"]
+
+    # Drop columns with 0 values
+    df = df.loc[:, (df != 0).any(axis=0)]
 
     # Print number of rows and features
     print(f"Number of rows: {df.shape[0]} \nNumber of features: {df.shape[1]}")
@@ -226,7 +215,12 @@ def parse_args():
         default="data",
         help="Path to the data directory",
     )
-    parser.add_argument("--download_data", type=bool, default=True, help="Download data")
+    parser.add_argument(
+        "--download_data", type=bool, default=True, help="Download data"
+    )
+    parser.add_argument(
+        "--exclude_GK", type=bool, default=True, help="Exclude GK from data"
+    )
 
     return parser.parse_args()
 
@@ -235,7 +229,7 @@ def main():
     args = parse_args()
     if args.download_data:
         download_data()
-    preprocess_data(path=args.data_path)
+    preprocess_data(path=args.data_path, exclude_GK=args.exclude_GK)
 
 
 if __name__ == "__main__":
