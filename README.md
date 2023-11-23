@@ -1,18 +1,54 @@
-# Statistical learning
-A brief description of what this project does and who it's for.
+
+# Statistical Analysis of Premier League Players for Fantasy Football Performance Prediction
 
 ## Description
-Provide a more in-depth paragraph about your project and an overview of its functionality. Explain the problem it solves or the question it answers.
+This project analyses and trains a classification model to predict Fantasy Premier League (FPL) points.
 
 ## Getting Started
 
-### Dependencies
-- Describe any libraries, frameworks, or tools used in your project.
-- Mention any environment or operating system limitations (if applicable).
+### Setting Up the Virtual Environment
+To install the virtual environment, follow these steps:
 
-### Installing
-- Instructions on how to download and install your project.
-- Necessary modifications to files/folders if applicable.
+1. Create the virtual environment:
+   ```
+   python -m venv .venv
+   ```
+2. Activate the virtual environment:
+   - On Windows:
+     ```
+     .venv\Scripts\activate
+     ```
+   - On macOS/Linux:
+     ```
+     source .venv/bin/activate
+     ```
+3. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-### Executing Program
-Provide detailed instructions on how to run your project.
+## Downloading the Data
+
+### Automated Download and Preprocessing
+To download and preprocess the data (requires Kaggle API key), run:
+```
+python src/data_preprocessing.py
+```
+
+### Manual Download
+Data can also be directly downloaded from the following links:
+- [2022/2023 Football Player Stats](https://www.kaggle.com/datasets/vivovinco/20222023-football-player-stats)
+- [Fantasy Premier League Dataset 2022/2023](https://www.kaggle.com/datasets/meraxes10/fantasy-premier-league-dataset-2022-2023)
+
+The downloaded data must be saved in `data/raw/`.
+
+If data is downloaded directly, run:
+```
+src/data_preprocessing.py --download_data False
+```
+
+### Training and Testing the Model
+To train and test the model, run:
+```
+python main.py --train_model xgboost --feature_selection_model rfe --num_features 30  
+```
